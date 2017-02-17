@@ -6,7 +6,7 @@
 
         imageInit: function () {
             var prefix = 'leaderboard';
-            var nameArray = ['leaderboard'];
+            var nameArray = ['birdYellow', 'birdRed', 'leaderboard', 'board'];
 
             for (var i=0; i<nameArray.length; i++) {
                 this.images[nameArray[i]] = new Image();
@@ -19,24 +19,25 @@
         render: function(ctx) {
             this.imageInit();
 
-            this.drawImage('leaderboard', ctx, {top: 0, left: 0});
+            this.drawImage('board', ctx, {top: 40, left: 8});
+            this.drawImage('leaderboard', ctx, {top: 13, left: 268});
 
-            buttonsManager.drawButton('refresh', ctx);
-            buttonsManager.drawButton('menu', ctx);
+            this.drawImage('birdRed', ctx, {top: 189, left: 159});
+            this.drawImage('birdYellow', ctx, {top: 850, left: 746});
+
+            buttonsManager.drawButton('close', ctx);
+            buttonsManager.drawButton('refreshLeaderboard', ctx);
+            buttonsManager.drawButton('mainMenu', ctx);
+
 
             // view logic
-            ctx.shadowBlur = 0;
-
-            ctx.font = '30px MyriadProCond';
-            ctx.fillStyle = '#FFFFFF';
+            ctx.font = '30px calibrib';
+            ctx.fillStyle = '#483219';
             ctx.textBaseline = 'top';
 
             var list = this.getLeaderList();
-            var user;
-            for (var i= 0, len = list.length; i<len; i++) {
-                user = list.pop();
-                ctx.fillText(user.name, 369, 323+i*45);
-                ctx.fillText(user.score, 610, 323+i*45);
+            for (var i=0; i<10; i++) {
+                ctx.fillText(list.pop(), 410, 170+i*48);
             }
 
         },
@@ -50,21 +51,9 @@
 
         getLeaderList: function () {
             var list = [];
-            var uname = 'User Name';
-            var score = 0;
 
-            var leaders = JSON.parse(localStorage.getItem('leaders')) || [];
-            leaders.sort(function (a, b) {
-                return a.score > b.score ? -1 : 1;
-            });
-
-            for (var i=7; i!=-1; i--) {
-                if (leaders[i]) {
-                    leaders[i].name = i+1 + '. ' + leaders[i].name;
-                        list.push(leaders[i]);
-                } else {
-                    list.push({name: i+1 + '. ' + uname, score: score});
-                }
+            for (var i=0; i<10; i++) {
+                list.push('Unregistered: 0');
             }
 
             return list;

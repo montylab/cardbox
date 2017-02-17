@@ -61,32 +61,22 @@
     };
 
 
-    var self;
-
-
     var gameplayView = {
         name: 'gameplay',
         images: [],
         lettersOnBoard: [],
-        gridStartX: 61,
-        gridStartY: 157,
-        gridSizeX: 588,
-        gridSizeY: 707,
-        cellSize: 84,
+        gridStartX: 153,
+        gridStartY: 249,
+        gridSize: 575,
+        cellSize: 57,
+        interval: null,
         score: 0,
         mainWord: '',
-        timePerFrame: 14,
-        activeLetters: [],
-        prediction: null,
-        tetrisMatrix: [[],[],[], [],[],[], [],[],[]],
-        paused: true,
-        createdWords: [],
-        level: 0,
-        animationQ: [],
+        definition: '',
 
         imageInit: function () {
             var prefix = 'gameplay';
-            var nameArray = ['gameplay', 'panel', 'cat_01', 'cat_02', 'cat_03', 'cat_04','cat_05','cat_06','cat_07','cat_08','cat_09','cat_10', 'cat_11', 'cell_z_yellow',  'cell_z_blue',  'cell_z_green',  'cell_z_red',  'cell_z_pink', 'cell_y_yellow',  'cell_y_blue',  'cell_y_green',  'cell_y_red',  'cell_y_pink', 'cell_x_yellow',  'cell_x_blue',  'cell_x_green',  'cell_x_red',  'cell_x_pink', 'cell_w_yellow',  'cell_w_blue',  'cell_w_green',  'cell_w_red',  'cell_w_pink', 'cell_v_yellow',  'cell_v_blue',  'cell_v_green',  'cell_v_red',  'cell_v_pink', 'cell_u_yellow',  'cell_u_blue',  'cell_u_green',  'cell_u_red',  'cell_u_pink', 'cell_t_yellow',  'cell_t_blue',  'cell_t_green',  'cell_t_red',  'cell_t_pink', 'cell_s_yellow',  'cell_s_blue',  'cell_s_green',  'cell_s_red',  'cell_s_pink', 'cell_r_yellow',  'cell_r_blue',  'cell_r_green',  'cell_r_red',  'cell_r_pink', 'cell_q_yellow',  'cell_q_blue',  'cell_q_green',  'cell_q_red',  'cell_q_pink', 'cell_p_yellow',  'cell_p_blue',  'cell_p_green',  'cell_p_red',  'cell_p_pink', 'cell_o_yellow',  'cell_o_blue',  'cell_o_green',  'cell_o_red',  'cell_o_pink', 'cell_n_yellow',  'cell_n_blue',  'cell_n_green',  'cell_n_red',  'cell_n_pink', 'cell_m_yellow',  'cell_m_blue',  'cell_m_green',  'cell_m_red',  'cell_m_pink', 'cell_l_yellow',  'cell_l_blue',  'cell_l_green',  'cell_l_red',  'cell_l_pink', 'cell_k_yellow',  'cell_k_blue',  'cell_k_green',  'cell_k_red',  'cell_k_pink', 'cell_j_yellow',  'cell_j_blue',  'cell_j_green',  'cell_j_red',  'cell_j_pink', 'cell_i_yellow',  'cell_i_blue',  'cell_i_green',  'cell_i_red',  'cell_i_pink', 'cell_h_yellow',  'cell_h_blue',  'cell_h_green',  'cell_h_red',  'cell_h_pink', 'cell_g_yellow',  'cell_g_blue',  'cell_g_green',  'cell_g_red',  'cell_g_pink', 'cell_f_yellow',  'cell_f_blue',  'cell_f_green',  'cell_f_red',  'cell_f_pink', 'cell_e_yellow',  'cell_e_blue',  'cell_e_green',  'cell_e_red',  'cell_e_pink',    'cell_d_yellow',  'cell_d_blue',  'cell_d_green',  'cell_d_red',  'cell_d_pink',    'cell_c_yellow',  'cell_c_blue',  'cell_c_green',  'cell_c_red',  'cell_c_pink',    'cell_b_yellow',  'cell_b_blue',  'cell_b_green',  'cell_b_red',  'cell_b_pink',    'cell_a_yellow',  'cell_a_blue',  'cell_a_green',  'cell_a_red',  'cell_a_pink',];
+            var nameArray = ['sky', 'board', 'cellDark', 'cellWhite', 'definitionIcon', 'leavesBack', 'back', 'garden', 'shrubes', 'stick', 'grass', 'owl', 'leaves', 'birdRed', 'birdYellow', 'score', 'square', 'timeline', 'tree'];
 
             for (var i = 0; i < nameArray.length; i++) {
                 this.images[nameArray[i]] = new Image();
@@ -99,94 +89,68 @@
         render: function (ctx) {
             this.imageInit();
 
-            this.nextLevel(1);
 
             // init only one time per game
             if (!this.initialized) {
+                $(document.body).on('mouseup', '#gmCanvas, #animationCanvas', this.mouseUp.bind(this));
+                $(document.body).on('mousedown', '#gmCanvas, #animationCanvas', this.mouseDown.bind(this));
+                $(document.body).on('mousemove', '#gmCanvas, #animationCanvas', this.mouseMove.bind(this));
                 this.initialized = true;
-                $(window).on('keydown', this.keydown);
-                $(window).on('keyup', this.keyup);
-
-                var i = clean.length;
-                while(i--) {
-                    clean[i].w = clean[i].w.toUpperCase();
-                }
             }
 
-            this.generateBonusWord();
+            this.generateMainWord();
 
-            this.drawImage('gameplay', ctx);
+            this.drawImage('sky', ctx);
+            this.drawImage('back', ctx, {top: 440, left: 0});
+            this.drawImage('leavesBack', ctx, {top: 0, left: 67});
+            this.drawImage('garden', ctx, {top: 516, left: 0});
+            this.drawImage('tree', ctx, {top: 3, left: 32});
+            this.drawImage('shrubes', ctx, {top: 837, left: 5});
+            this.drawImage('stick', ctx, {top: 966, left: 821});
+            this.drawImage('grass', ctx, {top: 969, left: 788});
+            this.drawImage('owl', ctx, {top: 9, left: 446});
+            this.drawImage('leaves', ctx, {top: 0, left: 362});
+            this.drawImage('birdRed', ctx, {top: 91, left: 637});
+            this.drawImage('birdYellow', ctx, {top: 80, left: 343});
 
-            this.drawLevelScore(App.anCtx);
+            this.drawImage('score', ctx, {top: 19, left: 0});
+            this.drawImage('board', ctx, {top: 236, left: 141});
+            this.drawImage('square', ctx, {top: 867, left: 195});
+            //this.drawImage('timeline', ctx, {top: 330, left: 872});
+            this.drawImage('definitionIcon', ctx, {top: 952, left: 200});
 
-            //buttonsManager.drawButton('submit', ctx);
-            buttonsManager.drawButton('miniMenu', ctx);
+            this.drawDefinition();
+
+            ctx.font = '48px calibrib';
+            ctx.textBaseline = 'top';
+            ctx.fillText(App.score, 178, 22);
+
+
+            ctx.font = '35px bubblegumregular';
+            ctx.fillStyle = '#FFEF00';
+            ctx.textBaseline = 'top';
+            ctx.fillText('SCORE:', 45, 37);
+
+            buttonsManager.drawButton('submit', ctx);
+            buttonsManager.drawButton('menu', ctx);
             buttonsManager.drawButton('close', ctx);
 
-            buttonsManager.drawButton('left', ctx);
-            buttonsManager.drawButton('right', ctx);
-
-            this.newLetter();
-            this.drawBonusWord();
-
-            this.gameStart();
-            this.drawAnimations();
+            this.startTime(ctx);
+            this.generateUserLevelLetters();
         },
 
-        generateBonusWord: function () {
-            App.bonusWord = kids[~~(Math.random()*kids.length)].w;
-            if (App.bonusWord.length != 5) this.generateBonusWord();
-        },
-
-        drawBonusWord: function () {
+        drawDefinition: function () {
             var ctx = App.anCtx;
-
-            ctx.clearRect(208, 906, 300, 45);
-
-            ctx.font = '40px Montserrat-Bold';
-            ctx.fillStyle = '#FF0000';
-            ctx.textBaseline = 'top';
-            ctx.fillText(App.bonusWord, 363 - ctx.measureText(App.bonusWord).width/2, 899);
-
-        },
-
-        drawLevelScore: function (ctx) {
-            ctx.clearRect(337, 53, 300, 50);
-            ctx.clearRect(695, 155, 270, 680);
-
-            ctx.font = '36px Muller-ExtraBold-DEMO';
-            ctx.fillStyle = '#24FF00';
-            ctx.textBaseline = 'top';
-            ctx.lineWidth=4;
-            ctx.strokeText(App.score, 569 - ctx.measureText(App.score).width/2, 62);
-            ctx.fillText(App.score, 569 - ctx.measureText(App.score).width/2, 62);
-
-            ctx.font = '32px Muller-ExtraBold-DEMO';
-            ctx.strokeText(this.level, 387 - ctx.measureText(this.level).width/2, 64);
-            ctx.fillText(this.level, 387 - ctx.measureText(this.level).width/2, 64);
-
-
-            ctx.font = '24px Montserrat-Bold';
+            ctx.font = '24px calibrib';
             ctx.fillStyle = '#FFFFFF';
-            var i = this.createdWords.length;
-            var w;
-            while (i--) {
-                w = this.createdWords[i];
-                ctx.fillText(w, 830 - ctx.measureText(w).width/2, 170+32*i);
-            }
-
-
-
+            ctx.textBaseline = 'top';
+            this.clearDefinition();
+            ctx.fillText('Definition: ', 252, 946);
+            wrapText(ctx, this.definition, 370, 946, 410, 24);
         },
 
-        gameStart: function () {
-            self = this;
-            this.paused = false;
-            this.gameloop();
-        },
-
-        drawLetter: function (ctx, letter, size) {
-            this.drawImage('cell_'+letter.name.toLowerCase()+'_'+letter.color, ctx, {left: letter.left, top: letter.top, size: size || this.cellSize});
+        clearDefinition: function () {
+            App.anCtx.clearRect(200,925, 600, 76);
         },
 
         destroy: function () {
@@ -195,74 +159,179 @@
             this.letterDragged = -1;
             this.tapped = -1;
             App.gmCtx.clearRect(0, 0, 1000, 1000);
+            this.clearDefinition();
         },
 
         drawImage: function (name, ctx, options) {
             var top = (options && options.top) ? options.top : 0;
             var left = (options && options.left) ? options.left : 0;
 
-            if (options && options.size) {
-                ctx.drawImage(this.images[name], 0, 0, this.images[name].width, this.images[name].height, left, top, options.size, options.size);
+            ctx.drawImage(this.images[name], left, top);
+        },
+
+        startTime: function (ctx) {
+            var tCnt = 0;
+            var _this = this;
+
+            this.interval = setInterval(function () {
+                tCnt++;
+                var height = 461 - 461 * (tCnt / 2000);
+                ctx.drawImage(_this.images['tree'], 828, 322, 65, 480, 860, 325, 65, 480);
+                ctx.drawImage(_this.images['timeline'], 0, 461 - height, 50, height, 872, 329 + 461 - height, 50, height);
+                if (height <= 0) {
+                    //time is up!
+                    clearInterval(_this.interval);
+                    viewManager.switchTo('gameover');
+                    console.log('time is up');
+                }
+            }, 15);
+        },
+
+        generateMainWord: function () {
+            var word;
+            while ((word = kids[Math.floor(Math.random() * kids.length)]).length < 4 || word.w.length > 8 && (word.d && word.d.length > 77)) {}
+
+            this.definition = word.d || '';
+            word = word.w.toUpperCase();
+            this.mainWord = word;
+
+            var startPosX = this.gridStartX + ~~(5 - word.length / 2) * this.cellSize;
+            for (var i = 0; i < word.length; i++) {
+                this.addLetter(word[i], startPosX + i * this.cellSize, this.gridStartY + this.cellSize * 4, (i % 2) ? 'cellDark' : 'cellWhite', false);
+            }
+            this.drawLetters();
+
+            console.info(word, this.definition, word.length);
+        },
+
+
+        //consonants: 'BCDFGHJKLMNPQRSTVWXZ',
+        generateUserLevelLetters: function () {
+            var vCnt = 0, l, vowels = 'AEIOUY';
+            for (var i = 0; i < 7; i++) {
+                l = this.randomLetter();
+                this.addLetter(l, 237 + i * this.cellSize, 875, (i % 2) ? 'cellDark' : 'cellWhite', true);
+                if (vowels.indexOf(l) != -1) vCnt++;
+
+            }
+            if (vCnt < 2 || vCnt > 4) {
+                this.lettersOnBoard = this.lettersOnBoard.slice(0, -7);
+                this.generateUserLevelLetters();
             } else {
-                ctx.drawImage(this.images[name], left, top);
+                this.reset();
+                this.drawLetters();
             }
         },
 
-        drawAnimations: function () {
-            var frames = 1;
-            var _this = this;
-            var ctx = App.anCtx;
-            var interval = setInterval(function () {
-                if (_this.paused) {
-                    clearInterval(interval);
-                    return;
+        needU: false,
+        randomLetter: function () {
+            var randN = ~~(Math.random()*427);
+            if (this.needU) {
+                this.needU = false;
+                return 'U';
+            }
+
+            for (var name in randomCnt) {
+                randN -= (21-randomCnt[name]);
+                if (randN < 0) {
+                    this.needU = name=='Q';
+                    return name;
                 }
-                var frame = frames < 10 ? '0'+frames : frames;
-                ctx.clearRect(664, 619, 340, 340);
-                _this.drawImage('cat_'+frame, ctx, {top: 619, left: 664});
-                _this.drawImage('panel', ctx, {top: 852, left: 663});
-
-
-                if (frames == 11) frames = 1;
-                frames++;
-            }, 100);
+            }
         },
 
-        detectPos: function (sym) {
-            if (!sym) return;
-            var hc = this.cellSize/8;
-            if (sym.left > this.gridStartX - hc && sym.left < this.gridStartX + this.gridSizeX - hc && sym.top > this.gridStartY - hc && sym.top < this.gridStartY + this.gridSizeY - hc) {
+        addLetter: function (letter, x, y, image, draggable) {
+            this.lettersOnBoard.push({name: letter, left: x, top: y, cellImage: image, draggable: draggable});
+        },
 
+        drawLetters: function (context) {
+            var sym;
+            var ctx = (context) ? context : App.gmCtx;
+
+            ctx.clearRect(0, 0, 1000, 1000);
+            var i = this.lettersOnBoard.length;
+            while (i--) {
+                sym = this.lettersOnBoard[i];
+                this.drawImage(sym.cellImage, ctx, {left: sym.left, top: sym.top});
+                ctx.font = '44px calibrib';
+                ctx.fillStyle = '#6D0012';
+                ctx.fillText(sym.name.toUpperCase(), sym.left + 29 - ctx.measureText(sym.name.toUpperCase()).width / 2, sym.top + 43);
+                ctx.font = '16px calibrib';
+                ctx.fillText(alphabetCnt[sym.name], sym.left+this.cellSize - 6 - ctx.measureText(alphabetCnt[sym.name]).width, sym.top + 51);
+            }
+        },
+
+        snapToGrid: function (sym) {
+            var goOut = false;
+            if (sym.left > this.gridStartX - 28 && sym.left < this.gridStartX + this.gridSize - 28 && sym.top > this.gridStartY - 28 && sym.top < this.gridStartY + this.gridSize - 28) {
                 var shiftX = (sym.left - this.gridStartX) % this.cellSize;
                 var shiftY = (sym.top - this.gridStartY) % this.cellSize;
 
-                var x = Math.round((sym.left - this.gridStartX) / this.cellSize);
-                var y = Math.round((sym.top - this.gridStartY) / this.cellSize);
+                sym.left -= shiftX;
+                sym.top -= shiftY;
 
-                return {x: x, y: y, shiftY: shiftY, shiftX: shiftX};
+                sym.left += (shiftX > 28) ? this.cellSize : 0;
+                sym.top += (shiftY > 28) ? this.cellSize : 0;
+            } else {
+                goOut = true;
+            }
+
+             var i= this.lettersOnBoard.length;
+            while(i--) {
+                if ((goOut && this.lettersOnBoard[i] == sym) || this.lettersOnBoard[i] != sym && this.lettersOnBoard[i].left == sym.left && this.lettersOnBoard[i].top == sym.top) {
+                    setTimeout((function(dx, dy, frame) {
+                        sym.left += dx/10;
+                        sym.top += dy/10;
+                        this.drawLetters(App.gmCtx);
+                        if (frame--) setTimeout(arguments.callee.bind(this, dx, dy, frame), 14);
+
+                    }).bind(this, sym.ix-sym.left, sym.iy-sym.top, 9), 140);
+
+                }
             }
         },
 
-
         checkWords: function () {
-            var matrix = this.tetrisMatrix;
+            var matrix = [[], [], [], [], [], [], [], [], [], []];
             var words = [];
             var word;
-            var x, y, i, maxLength = 0, maxLengthI = -1;
+            var x, y;
             var correctWords = [];
 
-            for (y = 0; y < 8; y++) {
+            var i = this.lettersOnBoard.length;
+            while (i--) {
+                x = (this.lettersOnBoard[i].left - this.gridStartX) / this.cellSize;
+                y = (this.lettersOnBoard[i].top - this.gridStartY) / this.cellSize;
+                if (x == Math.round(x) && y == Math.round(y)) {
+                    matrix[y][x] = this.lettersOnBoard[i];
+                }
+            }
+
+            for (y = 0; y < 10; y++) {
                 word = '';
-                for (x = 0; x < 7; x++) {
+                for (x = 0; x < 10; x++) {
                     if (matrix[y][x]) {
-                        word = matrix[y][x].name;
-                        for (i = x+1; i < 7; i++) {
-                            if (matrix[y][i]) {
-                                word += matrix[y][i].name;
-                                if (word.length > 2) words.push(word);
-                            } else {
-                                break;
-                            }
+                        if (x + 1 < 10 && matrix[y][x + 1]) {
+                            word += matrix[y][x].name;
+                        } else if (word) {
+                            word += matrix[y][x].name ? matrix[y][x].name : '';
+                            words.push(word);
+                            word = '';
+                        }
+                    }
+                }
+            }
+
+            for (x = 0; x < 10; x++) {
+                word = '';
+                for (y = 0; y < 10; y++) {
+                    if (matrix[y][x]) {
+                        if (y + 1 < 10 && matrix[y + 1][x]) {
+                            word += matrix[y][x].name;
+                        } else if (word) {
+                            word += matrix[y][x].name ? matrix[y][x].name : '';
+                            words.push(word);
+                            word = '';
                         }
                     }
                 }
@@ -273,49 +342,8 @@
                 if (words[i] != this.mainWord) { // don't count main word
                     x = clean.length;
                     while (x--) {
-                        if (words[i] == clean[x].w) {
+                        if (words[i].toUpperCase() == clean[x].w.toUpperCase()) {
                             correctWords.push(words[i]);
-
-                            if (maxLength<words[i].length ) {
-                                maxLength = words[i].length;
-                                maxLengthI = i;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (maxLengthI == -1) return;
-
-            var wordLen;
-            var wLen;
-            var indexes = [];
-            wordLen = words[maxLengthI].length;
-            word = words[maxLengthI];
-            for (y = 0; y < 8; y++) {
-                wLen = 0;
-                indexes = [];
-                for (x = 0; x < 7; x++) {
-                    for (i = x; i < 7; i++) {
-                        if (matrix[y][i] && word[wLen] == matrix[y][i].name) {
-                            indexes.push({x: i, y: y, cost: alphabetCnt[matrix[y][i].name]});
-                            wLen++;
-                            if (wLen == wordLen) {
-                                this.createdWords.push(word);
-
-                                if (word==App.bonusWord) {
-                                    this.generateBonusWord();
-                                    this.drawBonusWord();
-                                    this.removeWord(indexes, 2);
-                                } else {
-                                    this.removeWord(indexes, 1);
-                                }
-
-                                return;
-                            }
-                        } else {
-                            wLen = 0;
-                            indexes = [];
                         }
                     }
                 }
@@ -323,313 +351,149 @@
 
             console.info(words);
             console.info(correctWords);
+
+            //countScores
+            var levelScore = 0;
+            if (words.length-1 == correctWords.length) { // we dont count main word
+                i = correctWords.length;
+                while (i--) {
+                    x = correctWords[i].length;
+                    while (x--) {
+                        levelScore += alphabetCnt[correctWords[i][x]];
+                    }
+                }
+                return levelScore * correctWords.length;
+            } else {
+                return 0;
+            }
         },
 
-        removeWord: function (indexes, multiplier) {
-            var i=indexes.length;
-            var k;
-            var letIndex = indexes.length;
+        submit: function () {
+            var score = this.checkWords();
+            if (score) {
+                App.score +=score;
+                console.log('levelScore: ' + score + ', gameScore: ' + App.score);
 
-            while (i--) {
-                App.score += indexes[i].cost*multiplier;
-                this.tetrisMatrix[indexes[i].y][indexes[i].x].delay = 5*letIndex--;
-
-                this.animationQ.push(this.tetrisMatrix[indexes[i].y][indexes[i].x]);
-                this.tetrisMatrix[indexes[i].y][indexes[i].x] = undefined;
-                k = indexes[i].y;
-                while (k > 0) {
-                    this.tetrisMatrix[k][indexes[i].x] = this.tetrisMatrix[k-1][indexes[i].x];
-                    if (this.tetrisMatrix[k][indexes[i].x]) {
-                        setTimeout(function (dx, dy, fCnt) {
-                            fCnt--;
-                            if (fCnt < 20) {
-                                self.tetrisMatrix[dy][dx].top += self.cellSize/20;
-                            }
-                            if (fCnt) setTimeout(arguments.callee.bind(this, dx, dy, fCnt), self.timePerFrame);
-                        }.bind(this, indexes[i].x, k, 40+3*i), this.timePerFrame);
-
-                    }
-                    k--;
-                }
+                viewManager.switchTo('congratulations');
+            } else {
+                console.log('levelScore failed');
+                this.reset();
             }
-
-            this.nextLevel();
-            this.drawLevelScore(App.anCtx);
-
         },
 
         reset: function () {
-            this.paused = true;
+            var cnt = 0;
+            var i=this.lettersOnBoard.length;
+            while (i--) {
+                if (this.lettersOnBoard[i].draggable) {
+                    this.lettersOnBoard[i].left = 237 + cnt++ * this.cellSize;
+                    this.lettersOnBoard[i].top = 875;
+                }
+            }
+
+            this.drawLetters();
         },
 
         hardReset: function () {
-            this.paused = true;
-            this.tetrisMatrix = [[],[],[], [],[],[], [],[],[]];
-            this.activeLetter = null;
-            this.activeLetters =  [];
-            this.createdWords = [];
+            this.lettersOnBoard = [];
+            this.generateUserLevelLetters();
+            this.generateMainWord();
+            this.drawDefinition();
         },
 
-        newLetter: function () {
-            if (!this.prediction) this.predictLetters();
+        //mouse events
+        letterDragged: -1,
+        tapped: -1,
+        mouseDown: function (e) {
+            var x = e.offsetX;
+            var y = e.offsetY;
+            var sym;
 
-            this.activeLetters = this.prediction;
-            this.predictLetters();
+            //conver x and y, if gameView is smaller
+            x = 1000/App.$gmCanvas.width() * x;
+            y = 1000/App.$gmCanvas.width() * y;
+            if (this.tapped != -1 && (device.mobile() || device.tablet())) {
+                var sym = this.lettersOnBoard[this.tapped];
 
-            App.anCtx.clearRect(100, 20, 160, 90);
+                sym.left = x - sym.shiftX;
+                sym.top = y - sym.shiftY;
 
-            if (this.lpl == 3) {
-                this.drawLetter(App.anCtx, {name: this.prediction[0].name, left: 118, top: 48, color: this.prediction[0].color}, 40);
-                this.drawLetter(App.anCtx, {name: this.prediction[1].name, left: 158, top: 48, color: this.prediction[1].color}, 40);
-                this.drawLetter(App.anCtx, {name: this.prediction[2].name, left: 198, top: 48, color: this.prediction[2].color}, 40);
-            } else if (this.lpl == 2) {
-                this.drawLetter(App.anCtx, {name: this.prediction[0].name, left: 131, top: 42, color: this.prediction[0].color}, 50);
-                this.drawLetter(App.anCtx, {name: this.prediction[1].name, left: 178, top: 42, color: this.prediction[1].color}, 50);
-            } else {
-                this.drawLetter(App.anCtx, {name: this.prediction[0].name, left: 153, top: 42, color: this.prediction[0].color}, 50);
-            }
-        },
+                this.letterDragged = -1;
+                this.tapped = -1;
 
-        predictLetters: function (forced) {
-            if (this.lpl == 1) {
-                this.prediction = [{name: this.randomLetter(), top: 152, left: 313, color: ['green', 'red', 'pink', 'blue', 'yellow'][~~(Math.random()*5)]}];
-            }
-            if (this.lpl == 2) {
-                this.prediction = [
-                    {name: this.randomLetter(), top: 152, left: 229, color: ['green', 'red', 'pink', 'blue', 'yellow'][~~(Math.random()*5)]},
-                    {name: this.randomLetter(), top: 152, left: 313, color: ['green', 'red', 'pink', 'blue', 'yellow'][~~(Math.random()*5)]},
-                ];
-            }
-            if (this.lpl == 3) {
-                this.prediction = [
-                    {name: this.randomLetter(), top: 152, left: 229, color: ['green', 'red', 'pink', 'blue', 'yellow'][~~(Math.random()*5)]},
-                    {name: this.randomLetter(), top: 152, left: 313, color: ['green', 'red', 'pink', 'blue', 'yellow'][~~(Math.random()*5)]},
-                    {name: this.randomLetter(), top: 152, left: 397, color: ['green', 'red', 'pink', 'blue', 'yellow'][~~(Math.random()*5)]}
-                ];
+                this.snapToGrid(sym);
+                this.drawLetters();
+
+                this.checkWords();
+                return;
             }
 
-        },
+            for (var i = 0; i < this.lettersOnBoard.length; i++) {
+                sym = this.lettersOnBoard[i];
+                if (sym.draggable && x > sym.left && x < sym.left + letterSize && y > sym.top && y < sym.top + letterSize) {
+                    sym.ix = sym.ix || sym.left;
+                    sym.iy = sym.iy || sym.top;
 
-        gameover: function () {
-            this.pause = true;
-            this.hardReset();
-            App.anCtx.clearRect(0,0, 1000, 1000);
-            viewManager.switchTo('submit');
-        },
+                    //enable shifts
+                    sym.shiftX = x - sym.left;
+                    sym.shiftY = y - sym.top;
 
-        nextLevel: function () {
-            this.level = ~~(App.score / 30) + 1;
-            this.lpl = this.level%3 ? this.level%3 : 3;
-
-            var empty = 0;
-            this.activeLetters.forEach(function(el, i) {
-                if (!el )empty++;
-            });
-            if (empty == this.activeLetters.length) {
-                this.predictLetters();
-                this.newLetter();
-            }
-        },
-
-
-        needU: false,
-        lastVowel: 0,
-        vowels: "EYUIOA",
-        randomLetter: function () {
-            var randN = ~~(Math.random()*427);
-            if (this.needU) {
-                this.needU = false;
-                lastVowel = 0;
-                return 'U';
-            }
-
-            for (var name in randomCnt) {
-                randN -= (21-randomCnt[name]);
-                if (randN < 0) {
-                    this.needU = name=='Q';
-                    if (this.vowels.indexOf(name) != -1) {
-                        this.lastVowel = 0;
-                    } else {
-                        this.lastVowel++;
+                    if (device.mobile() || device.tablet()) {
+                        this.tapped = this.letterDragged;
                     }
 
-                    if (this.lastVowel > 4) {
-                        return this.randomLetter();
-                    }
-                    return name;
+                    var p = this.lettersOnBoard[i];
+                    this.lettersOnBoard.splice(i, 1);
+                    this.lettersOnBoard.splice(0, 0, p);
+
+
+                    this.letterDragged = 0;
+
+                    return;
                 }
             }
+            this.letterDragged = -1;
+            this.tapped = -1;
         },
+        mouseMove: function (e) {
+            var x = e.offsetX;
+            var y = e.offsetY;
 
-        gameloop: function () {
-            if (this.tetrisMatrix[0][3]) {
-                this.gameover();
-            }
-            if (this.paused) return;
-            var empty = 0;
-            this.activeLetters.forEach(function(el, i) {
-                if (!el )empty++;
-            });
-            if (!this.activeLetters || empty == this.activeLetters.length) {
-                this.newLetter();
-            }
+            x = 1000/App.$gmCanvas.width() * x;
+            y = 1000/App.$gmCanvas.width() * y;
 
+            if (this.letterDragged != -1) {
+                var sym = this.lettersOnBoard[this.letterDragged];
 
-            var i = this.activeLetters.length;
-            while (i--){
-                if (!this.activeLetters[i]) continue;
-                this.activeLetters[i].top += 2;
-                this.checkCollisions(this.activeLetters[i]);
-            }
+                sym.left = x - sym.shiftX;
+                sym.top = y - sym.shiftY;
+                this.drawLetters();
 
-            // erase
-            App.anCtx.clearRect(this.gridStartX, this.gridStartY - this.cellSize/2 , this.gridSizeX, this.gridSizeY + this.cellSize/2);
-
-            //draw
-            for (var y=0; y<this.tetrisMatrix.length; y++) {
-                for (var x=0; x<this.tetrisMatrix[y].length; x++) {
-                    if (this.tetrisMatrix[y][x]) {
-                        this.drawLetter(App.anCtx, this.tetrisMatrix[y][x]);
-                    }
-                }
-            }
-            if (this.activeLetters) {
-                var i = this.activeLetters.length;
-                while (i--){
-                    if (!this.activeLetters[i]) continue;
-                    this.drawLetter(App.anCtx, this.activeLetters[i]);
-                }
-            }
-
-            var i = this.animationQ.length;
-            var ctx =  App.anCtx;
-            var fs;
-            while(i--) {
-                if (this.animationQ[i]) {
-                    if (this.animationQ[i].delay-- > 0) {
-                        this.drawLetter(App.anCtx, this.animationQ[i], this.cellSize);
-                        continue;
-                    }
-
-                    this.animationQ[i].size = this.animationQ[i].size-4 || this.cellSize;
-                    this.animationQ[i].left += 2;
-                    this.animationQ[i].top += 2;
-                    this.drawLetter(App.anCtx, this.animationQ[i], this.animationQ[i].size);
-
-                    fs = this.animationQ[i].size-47*(1/this.animationQ[i].size);
-                    fs = Math.max(fs, 5);
-                    ctx.font = fs +'px Muller-ExtraBold-DEMO';
-                    ctx.fillStyle = '#FFFFFF';
-                    ctx.textBaseline = 'top';
-                    ctx.shadowBlur = 10;
-                    ctx.shadowColor = '#FFFFFF';
-                    ctx.fillText(this.animationQ[i].name, this.animationQ[i].left+this.animationQ[i].size/2-ctx.measureText(this.animationQ[i].name).width/2, this.animationQ[i].top+this.animationQ[i].size/5-3);
-                    ctx.shadowBlur = 0;
-                    if (this.animationQ[i].size < 5) this.animationQ[i] = undefined;
-                }
-            }
-
-
-            setTimeout(this.gameloop.bind(this), this.timePerFrame);
-        },
-
-        checkCollisions: function (al) {
-
-            // tetris matrix collisions
-            for (var y=0; y<this.tetrisMatrix.length; y++) {
-                for (var x=0; x<this.tetrisMatrix[y].length; x++) {
-                    if (this.tetrisMatrix[y][x]) {
-                        if (al.top >= this.tetrisMatrix[y][x].top - this.cellSize && al.left == this.tetrisMatrix[y][x].left) {
-                            this.putLetterToMatrix(al);
-                            return;
-                        }
-                    }
-                }
-            }
-
-            if (al.top > 828-this.cellSize) {
-                this.putLetterToMatrix(al);
+                console.log('moved!');
             }
         },
+        mouseUp: function (e) {
+            if (device.mobile() || device.tablet()) return;
 
-        putLetterToMatrix: function (al) {
-            var pos = this.detectPos(al);
-            al.left = this.gridStartX + pos.x * this.cellSize;
-            al.top = this.gridStartY + pos.y * this.cellSize;
-            this.tetrisMatrix[pos.y][pos.x] = al;
+            var x = e.offsetX;
+            var y = e.offsetY;
 
-            this.activeLetters.forEach(function (el, i) {
-                if (!el) return;
-                if (el.left == al.left) {
-                    self.activeLetters[i] = null;
-                }
-            });
+            x = 1000/App.$gmCanvas.width() * x;
+            y = 1000/App.$gmCanvas.width() * y;
 
-            this.checkWords();
-        },
+            if (this.letterDragged != -1) {
+                var sym = this.lettersOnBoard[this.letterDragged];
 
-        clearActiveLetter: function () {
-            var l;
-            var ctx = App.anCtx;
-            var i = this.activeLetters.length;
-            while (i--) {
-                l = this.activeLetters[i];
-                ctx.clearRect(l.left-this.cellSize, l.top-this.cellSize, l.left+this.cellSize, l.top+this.cellSize)
-            }
-        },
+                sym.left = x - sym.shiftX;
+                sym.top = y - sym.shiftY;
+                this.letterDragged = -1;
 
-        keydown: function (e) {
-            if (!self.activeLetters) return;
+                this.snapToGrid(sym);
+                this.drawLetters();
 
-            if (e.keyCode == 37) {
-                buttonsManager.buttons.left.action('keydown');
-            }
-            if (e.keyCode == 39) {
-                buttonsManager.buttons.right.action('keydown');
-            }
-            if (e.keyCode == 40) {
-                self.activeLetters.forEach(function (el, i) {
-                    if (!el) return;
-                    el.top += 40;
-                });
-            }
-        },
-        keyup: function () {
-            if (buttonsManager.buttons.left.pressed) buttonsManager.buttons.left.action('keyup');
-            if (buttonsManager.buttons.right.pressed) buttonsManager.buttons.right.action('keyup');
-        },
+                console.log('dropped!');
 
-        moveLeft: function () {
-            if (self.activeLetters) {
-                var leftLetter = self.activeLetters[0] || self.activeLetters[1] || self.activeLetters[2];
-
-                if (!leftLetter) return;
-
-                var pos = self.detectPos(leftLetter);
-                if (leftLetter.left >= self.gridStartX + self.cellSize && !self.tetrisMatrix[pos.y][pos.x - 1]) {
-
-                    if (pos.shiftY < self.cellSize/2 &&  self.tetrisMatrix[pos.y+1][pos.x - 1]) {console.error(pos.shiftY); return;}
-                    console.log(pos.shiftY);
-                    self.activeLetters.forEach(function (el, i) {
-                        if (!el) return;
-                        el.left -= self.cellSize;
-                    });
-
-                }
-            }
-        },
-        moveRight: function () {
-            if (self.activeLetters) {
-                var rightLetter = self.activeLetters[2] || self.activeLetters[1] || self.activeLetters[0];
-                if (!rightLetter) return;
-
-                var pos = self.detectPos(rightLetter);
-                if (rightLetter.left < self.gridStartX + self.gridSizeX-self.cellSize && !self.tetrisMatrix[pos.y][pos.x+1]) {
-                    self.activeLetters.forEach(function (el, i) {
-                        if (!el) return;
-                        el.left += self.cellSize;
-                    });
-                }
+                this.checkWords();
             }
         }
     };

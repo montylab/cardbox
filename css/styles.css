@@ -1,8 +1,17 @@
 body {margin: 0;}
 
+#logo {
+    background: url("../resources/main/logo.svg") no-repeat;
+    position: absolute;
+    width: 130px;
+    height: 39px;
+    left: 430px;
+    z-index: 10001;
+}
+
 #gameCanvas, #gmCanvas, #animationCanvas     {
-    max-width: 1000px;
-    max-height: 1000px;
+    max-width: 800px;
+    max-height: 800px;
     width: 100%;
     display: block;
     position: absolute;
@@ -18,118 +27,49 @@ body {margin: 0;}
     outline: none;
 }
 
-.canvasHolder {
-    max-width: 1000px;
-    max-height: 1000px;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    -webkit-transform: translate(-50%, -50%);
 
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
-    outline: none;
-}
-
-#submitScore {
-    background: transparent;
-    z-index: 1;
-    position: absolute;
-    top: 545px;
-    left: 50.1%;
-    width: 34%;
-    margin-left: -17%;
-    height: 36px;
-    text-align: center;
-    font-size: 33px;
-    font-family: MyriadProRegular;
-    color: #FFF;
-    font-style: italic;
-    display: none;
-    border: none;
-    outline: none;
-}
-
-@media (max-width: 700px) {
-    #submitScore {
-        font-size: 24px;
-        line-height: 24px;
-        margin-top: -10px;
-
-    }
-}
-
-@media (max-width: 480px) {
-    #submitScore {
-        font-size: 16px;
-        line-height: 16px;
-        margin-top: -10px;
-    }
-}
-
-::-webkit-input-placeholder {
-    color:    #FFF;
-}
-:-moz-placeholder {
-    color:    #FFF;
-}
-::-moz-placeholder {
-    color:    #FFF;
-}
-:-ms-input-placeholder {
-    color:    #FFF;
+@font-face {
+    font-family: 'multicolore_regular';
+    src: url('../resources/fonts/multicolore-webfont.woff2') format('woff2'),
+    url('../resources/fonts/multicolore-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
 }
 
 @font-face {
-    font-family: 'MyriadProCond';
-    src: url('../resources/fonts/MyriadPro-Cond.otf');
+    font-family: 'bubblegumregular';
+    src: url('../resources/fonts/bubblegum-webfont.woff2') format('woff2'),
+    url('../resources/fonts/bubblegum-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
 }
 
 @font-face {
-    font-family: 'MyriadProRegular';
-    src: url('../resources/fonts/MyriadPro-Regular.otf');
+    font-family: 'calibri';
+    src: url('../resources/fonts/calibri.ttf') format('truetype');
 }
 
 @font-face {
-    font-family: 'MyriadProBold';
-    src: url('../resources/fonts/MyriadPro-Bold.otf');
+    font-family: 'calibrib';
+    src: url('../resources/fonts/calibrib.ttf') format('truetype');
 }
 
 @font-face {
-    font-family: 'Muller-Thin-DEMO';
-    src: url('../resources/fonts/Muller-Thin-DEMO.otf');
+    font-family: 'calibrii';
+    src: url('../resources/fonts/calibrii.ttf') format('truetype');
 }
 
 @font-face {
-    font-family: 'Muller-ExtraBold-DEMO';
-    src: url('../resources/fonts/Muller-ExtraBold-DEMO.otf');
-}
-@font-face {
-    font-family: 'Montserrat-Regular';
-    src: url('../resources/fonts/Montserrat-Regular.otf');
-}
-@font-face {
-    font-family: 'Montserrat-Bold';
-    src: url('../resources/fonts/Montserrat-Bold.otf');
-}
-@font-face {
-    font-family: 'Montserrat-SemiBold';
-    src: url('../resources/fonts/Montserrat-SemiBold.otf');
+    font-family: 'calibriz';
+    src: url('../resources/fonts/calibriz.ttf') format('truetype');
 }
 
 .preloadHolder {position: absolute; top: -2000px;}
 .preloadHolder img {position: absolute; top: 0; left: 0;}
 .font {opacity: 0.99; font-size: 1px; color: #FFF;}
-.MyriadProCond    {font-family: MyriadProCond;}
-.MyriadProBold    {font-family: MyriadProBold;}
-.MyriadProRegular    {font-family: MyriadProRegular;}
-.Muller-Thin-DEMO    {font-family: Muller-Thin-DEMO;}
-.Montserrat-Regular    {font-family: Montserrat-Regular;}
-.Montserrat-SemiBold    {font-family: Montserrat-SemiBold;}
-.Montserrat-Bold    {font-family: Montserrat-Bold;}
-.Muller-ExtraBold-DEMO {font-family: Muller-ExtraBold-DEMO;}
+.calibri    {font-family: calibri;}
+.calibrii   {font-family: calibrii;}
+.calibrib   {font-family: calibrib;}
+.calibriz   {font-family: calibriz;}
+.bubblegumregular   {font-family: bubblegumregular;}
+.multicolore_regular   {font-family: multicolore_regular;}

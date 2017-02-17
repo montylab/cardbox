@@ -1,22 +1,22 @@
 var buttonsManager = {
-    buttonsNames: ['playAgain', 'refresh', 'leaderboard', 'submitScore', 'howTo', 'menu', 'miniMenu', 'play', 'next', 'back', 'close', 'left', 'left_pressed', 'right', 'right_pressed'],
+    buttonsNames: ['start', 'howToPlay', 'leaderboard', 'mainMenu', 'close', 'back', 'next', 'refreshLeaderboard', 'submit', 'menu', 'nextWordRack', 'submitScore', 'retry', 'gm_mainMenu'],
     buttons: {
-        play: {
-            top: 605,
-            left: 360,
+        start: {
+            top: 539,
+            left: 353,
             width: 293,
             height: 100,
 
             action: function () {
+                viewManager.switchTo('gameplay');
                 viewManager.views.gameplay.hardReset();
                 App.score = 0;
-                viewManager.switchTo('gameplay');
             },
             isActive: false
         },
-        howTo: {
-            top: 851,
-            left: 360,
+        howToPlay: {
+            top: 702,
+            left: 353,
             width: 293,
             height: 100,
             action: function () {
@@ -25,8 +25,8 @@ var buttonsManager = {
             isActive: false
         },
         leaderboard: {
-            top: 744,
-            left: 360,
+            top: 821,
+            left: 353,
             width: 293,
             height: 100,
             action: function () {
@@ -34,9 +34,9 @@ var buttonsManager = {
             },
             isActive: false
         },
-        menu: {
-            top: 813,
-            left: 360,
+        mainMenu: {
+            top: 805,
+            left: 353,
             width: 293,
             height: 100,
             action: function () {
@@ -44,47 +44,78 @@ var buttonsManager = {
             },
             isActive: false
         },
-        miniMenu: {
-            top: 941,
-            left: 800,
-            width: 181,
-            height: 56,
+        menu: {
+            top: 905,
+            left: 797,
+            width: 293,
+            height: 100,
             action: function () {
                 viewManager.switchTo('main');
-                viewManager.views.gameplay.hardReset();
-                App.anCtx.clearRect(0,0, 1000, 1000);
+            },
+            isActive: false
+        },
+        submit: {
+            top: 825,
+            left: 797,
+            width: 186,
+            height: 66,
+            action: function () {
+                viewManager.views.gameplay.submit();
+                //viewManager.switchTo('congratulations', null, 'second');
             },
             isActive: false
         },
         submitScore: {
-            top: 701,
-            left: 360,
-            width: 280,
-            height: 90,
+            top: 822,
+            left: 353,
+            width: 293,
+            height: 101,
             action: function () {
-                var leaders = JSON.parse(localStorage.getItem('leaders')) || [];
-                leaders.push({name: $('#submitScore').val(), score: App.score});
-                localStorage.setItem('leaders', JSON.stringify(leaders));
-
                 viewManager.switchTo('leaderboard', null, 'second');
+                viewManager.views.gameover.clearAnimation();
             },
             isActive: false
         },
-        playAgain: {
-            top: 813,
-            left: 360,
-            width: 280,
-            height: 90,
+        gm_mainMenu: {
+            top: 702,
+            left: 353,
+            width: 293,
+            height: 100,
             action: function () {
+                viewManager.switchTo('main');
+                viewManager.views.gameover.clearAnimation();
+            },
+            isActive: false
+        },
+        retry: {
+            top: 565,
+            left: 353,
+            width: 293,
+            height: 100,
+            action: function () {
+                viewManager.switchTo('gameplay');
+                viewManager.views.gameover.clearAnimation();
                 viewManager.views.gameplay.hardReset();
                 App.score = 0;
-                viewManager.switchTo('gameplay');
             },
             isActive: false
         },
-        refresh: {
-            top: 694,
-            left: 360,
+        nextWordRack: {
+            top: 582,
+            left: 343,
+            width: 329,
+            height: 66,
+            action: function () {
+                viewManager.switchTo('gameplay');
+                viewManager.views.congratulations.clearAnimation();
+                viewManager.views.gameplay.hardReset();
+
+            },
+            isActive: false
+        },
+        refreshLeaderboard: {
+            top: 699,
+            left: 353,
             width: 293,
             height: 100,
             action: function () {
@@ -94,20 +125,19 @@ var buttonsManager = {
             isActive: false
         },
         close: {
-            top: 5,
-            left: 906,
+            top: 26,
+            left: 890,
             width: 69,
             height: 67,
             action: function () {
+                //todo implement back logic
                 viewManager.switchTo('main');
-                viewManager.views.gameplay.hardReset();
-                App.anCtx.clearRect(0,0, 1000, 1000);
             },
             isActive: false
         },
         back: {
-            top: 465,
-            left: 87,
+            top: 719,
+            left: 353,
             width: 59,
             height: 57,
             action: function () {
@@ -116,8 +146,8 @@ var buttonsManager = {
             isActive: false
         },
         next: {
-            top: 462,
-            left: 840,
+            top: 719,
+            left: 588,
             width: 58,
             height: 57,
             action: function () {
@@ -125,58 +155,6 @@ var buttonsManager = {
             },
             isActive: false
         },
-        left: {
-            top: 868,
-            left: 44,
-            width: 135,
-            height: 132,
-            action: function (state) {
-                if (state == 'keyup') {
-                    this.pressed = false;
-                    buttonsManager.drawButton('left', this.ctx);
-                    return;
-                }
-
-                if (state == 'keydown') {
-                    this.pressed = true;
-                    viewManager.views.gameplay.moveLeft();
-                    buttonsManager.drawButton('left', this.ctx);
-                    return;
-                }
-                this.pressed = state == 'pressed' ? true : false;;
-                if (state == 'pressed') viewManager.views.gameplay.moveLeft();
-                buttonsManager.drawButton('left', this.ctx);
-            },
-            isActive: false,
-            pressed: false
-        },
-        left_pressed: {},
-        right: {
-            top: 868,
-            left: 532,
-            width: 135,
-            height: 132,
-            action: function (state) {
-                if (state == 'keyup') {
-                    this.pressed = false;
-                    buttonsManager.drawButton('right', this.ctx);
-                    return;
-                }
-
-                if (state == 'keydown') {
-                    this.pressed = true;
-                    viewManager.views.gameplay.moveRight();
-                    buttonsManager.drawButton('right', this.ctx);
-                    return;
-                }
-                this.pressed = state == 'pressed' ? true : false;;
-                if (state == 'pressed') viewManager.views.gameplay.moveRight();
-                buttonsManager.drawButton('right', this.ctx);
-            },
-            isActive: false,
-            pressed: false
-        },
-        right_pressed: {},
     },
     images: [],
     activeButtons: [],
@@ -189,10 +167,6 @@ var buttonsManager = {
         //mouse events
         $(document.body).on('mousemove', '#gameCanvas, #gmCanvas, #animationCanvas', this.mouseHover.bind(this));
         $(document.body).on('click', '#gameCanvas, #gmCanvas, #animationCanvas', this.mouseClick.bind(this));
-        $(document.body).on('mousedown', '#gameCanvas, #gmCanvas, #animationCanvas', this.mouseDown.bind(this));
-
-        this.buttons.left.ctx = App.anCtx;
-        this.buttons.right.ctx = App.anCtx;
     },
 
     buttonsInit: function () {
@@ -212,17 +186,8 @@ var buttonsManager = {
         var top = (options && options.top)?options.top:this.buttons[name].top;
         var left = (options && options.left)?options.left:this.buttons[name].left;
 
-        ctx = this.buttons[name].ctx || ctx;
-
         this.buttons[name].isActive = true;
-        if (this.buttons[name].pressed) {
-            ctx.clearRect(this.buttons[name].left, this.buttons[name].top, this.buttons[name].width, this.buttons[name].height);
-            ctx.drawImage(this.images[name+'_pressed'], left,top);
-        } else {
-            //ctx.clearRect(this.buttons[name].left, this.buttons[name].top, this.buttons[name].width, this.buttons[name].height);
-            ctx.drawImage(this.images[name], left,top);
-        }
-
+        ctx.drawImage(this.images[name], left,top);
     },
 
     mouseHover: function (e) {
@@ -250,6 +215,15 @@ var buttonsManager = {
         var x = e.offsetX;
         var y = e.offsetY;
 
+        //if ((e.pageX - App.$canvas.offset().left) == e.offsetX) {
+        //    //console.log('px + offset: ' + ((e.pageX - App.$canvas.offset().left) == e.offsetX));
+        //    x = e.pageX - App.$canvas.offset().left;
+        //    x = e.pageY - App.$canvas.offset().top;
+        //}
+        //
+        //alert(App.$gmCanvas.width());
+        //alert(x);
+
         x = 1000/App.$gmCanvas.width() * x;
         y = 1000/App.$gmCanvas.width() * y;
 
@@ -259,23 +233,6 @@ var buttonsManager = {
                 console.log('click on: '+this.buttonsNames[i]);
                 btn.action();
                 // inside the buttonName!
-                return;
-            }
-        }
-    },
-
-    mouseDown: function (e) {
-        var btn;
-        var x = e.offsetX;
-        var y = e.offsetY;
-
-        x = 1000/App.$gmCanvas.width() * x;
-        y = 1000/App.$gmCanvas.width() * y;
-
-        for (var i=0; i<this.buttonsNames.length; i++) {
-            btn = this.buttons[this.buttonsNames[i]];
-            if (btn.isActive && btn.pressed != undefined && x > btn.left && x < btn.left+btn.width && y > btn.top && y < btn.top+btn.height) {
-                btn.action('pressed');
                 return;
             }
         }
