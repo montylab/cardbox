@@ -1,0 +1,41 @@
+{
+    "env": {
+        "browser": true
+    },
+    "extends": "eslint:recommended",
+
+    "globals": {
+        "res": true,
+        "App": true,
+        "viewManager": true,
+        "buttonsManager": true,
+        "device": true,
+        "kids": true,
+        "clean": true,
+        "$": true,
+        "wrapText": true,
+        "$": true,
+        "$": true,
+        "$": true
+    },
+
+    "rules": {
+        "indent": [
+            "error",
+            "tab"
+        ],
+        "linebreak-style": [
+            "error",
+            "windows"
+        ],
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ],
+        "no-console": "off"
+    }
+}

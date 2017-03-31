@@ -1,0 +1,32 @@
+{
+  "name": "cardbox",
+  "version": "1.0.0",
+  "description": "Cardbox education game",
+  "main": "index.html",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "eslint": "^3.18.0"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/eslint.cmd js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/montylab/cardbox.git"
+  },
+  "keywords": [
+    "game",
+    "education",
+    "html5",
+    "canvas",
+    "javascript",
+    "js"
+  ],
+  "author": "montylab",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/montylab/cardbox/issues"
+  },
+  "homepage": "https://github.com/montylab/cardbox#readme"
+}
